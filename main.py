@@ -1,7 +1,9 @@
 from time import sleep
+from typing import Optional
 from dataclasses import dataclass
 
-from utils import to_list, to_dict, write_json
+
+from utils import to_list, to_dict, write_json, open_tab, scrape_data
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,58 +12,64 @@ from selenium.webdriver.common.by import By
 # define class
 @dataclass
 class Album:
-    title: str
-    artist: str
-    average: str
-    ratings: str
-    reviews: str
-    date: str
-    main_genre: str
-    sub_genre: str
-    description: str
+    title: str = "no title"
+    artist: str = "no artist"
+    average: str = "no average"
+    ratings: str = "no ratings"
+    reviews: str = "no reviews"
+    date: str = "no date"
+    main_genre: str = "no main genre"
+    sub_genre: str = "no sub genre"
+    description: str = "no description"
+    img_url: Optional[str] = None
 
 
 # define varibles
 holder_array = []
 
-PATH = "/album_data.json"
+PATH = "rym_scraper/albums.json"
 
 running = True  # create a bool to know when we're running
 
-driver = webdriver.Chrome()  # create instance of chrome
+urls = [
+    "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/",
+    "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/2/",
+    "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/3/",
+]
 
-URL = "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/"  # navigate to website
-
+count = 0
 
 # start the scrape
 while running:
-    driver.get(URL)
+    for url in urls:
+        driver = open_tab(url)
 
-    sleep(20)
+        sleep(20)
 
-    # start scraping data
-    for i in range(1, 5):
-        # Get the xpath of the elemnts
-        el_xpath = f"/html/body/div[6]/div/div[2]/sections/group[2]/section[3]/div[{i}]"
-        img_xpath = f"/html/body/div[6]/div/div[2]/sections/group[2]/section[3]/div[{i}]/div/a/picture/img"
+        # scrape the page data
+        for i in range(1, 41):
 
-        # define the elements
-        element = driver.find_element(By.XPATH, el_xpath)
-        # img = element.find_element(By.XPATH, img_xpath)
+            # scrape the data into temp array
+            this_album = scrape_data(i, driver)
 
-        # place the data into list
-        album_data = to_list(element.text)
+            # convert to dictionary
+            to_dict(this_album, holder_array, Album)
 
-        # convert to dictionary
-        to_dict(album_data, holder_array, Album)
-        sleep(5)
+            sleep(5)  # wait a lil
 
-    # once data is scraped, place it into json file
-    write_json(holder_array, PATH)
+            print(f"album {i} is done")
+
+        count += 1
+
+        print(f"page {count} is done")
+
+        # close browser
+        driver.close()
+
+        sleep(10)  # wait a lil
 
     running = False
 
-sleep(10)  # wait a lil
-
-# close the browser
-driver.close()
+# once data is scraped, place it into json file PLACE INTO OUTER LOOP
+print("all albums are done")
+write_json(holder_array, PATH)
