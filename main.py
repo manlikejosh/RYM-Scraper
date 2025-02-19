@@ -32,9 +32,9 @@ PATH = "rym_scraper/albums.json"
 running = True  # create a bool to know when we're running
 
 urls = [
-    "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/",
-    "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/2/",
-    "https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/3/",
+    "https://rateyourmusic.com/charts/top/album/all-time/1/",
+    "https://rateyourmusic.com/charts/top/album/all-time/2/",
+    "https://rateyourmusic.com/charts/top/album/all-time/3/",
 ]
 
 count = 0
@@ -51,9 +51,10 @@ while running:
 
             # scrape the data into temp array
             this_album = scrape_data(i, driver)
+            print(this_album)
 
             # convert to dictionary
-            to_dict(this_album, holder_array, Album)
+            # to_dict(this_album, holder_array, Album)
 
             sleep(5)  # wait a lil
 

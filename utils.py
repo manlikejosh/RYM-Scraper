@@ -34,9 +34,9 @@ def open_tab(url: str):
 # Scrape all albums on page, return the recently scraped album
 def scrape_data(iteration: int, driver) -> list:
     el_xpath = (
-        f"/html/body/div[6]/div/div[2]/sections/group[2]/section[3]/div[{iteration}]"
+        f"/html/body/div[7]/div/div[2]/sections/group[1]/section[2]/div[1]/div[{iteration}]"
     )
-    img_xpath = f"/html/body/div[6]/div/div[2]/sections/group[2]/section[3]/div[{iteration}]/div/a/picture/img"
+    img_xpath = f"/html/body/div[7]/div/div[2]/sections/group[1]/section[2]/div[1]/div[{iteration}]/div/a/picture/img"
 
     element = driver.find_element(By.XPATH, el_xpath)
     img = element.find_element(By.XPATH, img_xpath)
